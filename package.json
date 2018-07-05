@@ -1,0 +1,41 @@
+{
+  "name": "dms-api",
+  "version": "1.0.0",
+  "description": "A document management system api",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./package-lock.json,./README.md,./npm-debug.log --copy-files",
+    "start": "npm run build && node dist/server.js",
+    "db:migrate": "sequelize db:migrate:undo:all && sequelize db:migrate",
+    "create:db": "sequelize db:create",
+    "drop:db": "sequelize db:drop"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eguonoefe/dms-api.git"
+  },
+  "keywords": [
+    "API"
+  ],
+  "author": "Eguonoghene Efekemo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eguonoefe/dms-api/issues"
+  },
+  "homepage": "https://github.com/eguonoefe/dms-api#readme",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "pg": "^7.4.3",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.38.0",
+    "sequelize-cli": "^4.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "rimraf": "^2.6.2"
+  }
+}
