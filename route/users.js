@@ -1,5 +1,7 @@
+import userController from '../controllers/User';
+
 export default (app) => {
-  app.get('/', (req, res) => {
-    res.send('awesome')
-  });
+  app.get('/', userController.details);
+
+  app.post('/signup', userController.create);
 }
