@@ -4,9 +4,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _ControllerMethods2 = require('./ControllerMethods');
 
 var _ControllerMethods3 = _interopRequireDefault(_ControllerMethods2);
+
+var _AppError = require('../helpers/AppError');
+
+var _AppError2 = _interopRequireDefault(_AppError);
+
+var _Validate = require('../helpers/Validate');
+
+var _Validate2 = _interopRequireDefault(_Validate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,8 +32,20 @@ var User = function (_ControllerMethods) {
   function User() {
     _classCallCheck(this, User);
 
-    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, 'User'));
+    var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, 'User', 'email'));
+
+    _this.validateParams = _this.validateParams.bind(_this);
+    return _this;
   }
+
+  _createClass(User, [{
+    key: 'validateParams',
+    value: function validateParams(params) {
+      if (!_Validate2.default.signup(params)) {
+        throw new _AppError2.default('User cannot be created, Invalid parameters', 403);
+      }
+    }
+  }]);
 
   return User;
 }(_ControllerMethods3.default);

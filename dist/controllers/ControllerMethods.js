@@ -23,11 +23,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ControllerMethods = function () {
-  function ControllerMethods(name) {
+  function ControllerMethods(name, unique) {
     _classCallCheck(this, ControllerMethods);
 
     this.name = name;
-    this.model = _models2.default[name];
+    this.unique = unique;
 
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -41,46 +41,93 @@ var ControllerMethods = function () {
     value: function create(req, res) {
       var _this = this;
 
-      var _req$body = req.body,
-          firstName = _req$body.firstName,
-          lastName = _req$body.lastName,
-          email = _req$body.email,
-          password = _req$body.password;
-
       var run_method = function run_method(record) {
-        if (record !== null) {
-          throw new _AppError2.default(_this.name + ' already exists for this email', 409);
+        if (record && _this.unique) {
+          throw new _AppError2.default(_this.name + ' already exists for this ' + _this.unique, 409);
         }
-        console.log(firstName);
+        _this.validateParams(req.body);
+        _models2.default[_this.name].create(req.body).then(function (newRecord) {
+          res.status(200).send(newRecord);
+        }).catch(function (err) {
+          res.send(err.message);
+        });
       };
-
-      this.findRecord(res, { email: email }, run_method);
+      if (this.unique) {
+        var query = {};
+        query[this.unique] = req.body[this.unique];
+        this.findRecord(res, query, run_method);
+      } else {
+        run_method();
+      }
     }
   }, {
     key: 'update',
-    value: function update(req, res) {}
-  }, {
-    key: 'list',
-    value: function list(req, res) {}
-  }, {
-    key: 'details',
-    value: function details(req, res) {
+    value: function update(req, res) {
       var _this2 = this;
 
       var run_method = function run_method(record) {
         if (record == null) {
-          throw new _AppError2.default(_this2.name + ' already does not exist', 404);
+          throw new _AppError2.default(_this2.name + ' does not exist', 404);
+        }
+
+        record.update(req.body).then(function (updatedRecord) {
+          res.status(200).send(updatedRecord);
+        }).catch(function (err) {
+          res.send(err.message);
+        });
+      };
+
+      this.findRecord(res, { id: req.params.id }, run_method);
+    }
+  }, {
+    key: 'list',
+    value: function list(req, res) {
+      _models2.default[this.name].findAll({ where: { deprecated_at: null } }).then(function (records) {
+        res.status(200).send(records);
+      }).catch(function (err) {
+        res.send(err);
+      });
+    }
+  }, {
+    key: 'details',
+    value: function details(req, res) {
+      var _this3 = this;
+
+      var run_method = function run_method(record) {
+        if (record == null) {
+          throw new _AppError2.default(_this3.name + ' does not exist', 404);
         }
         res.status(200).send(record);
       };
-      this.findRecord(res, { id: 1 }, run_method);
+      this.findRecord(res, { id: req.params.id }, run_method);
     }
   }, {
     key: 'delete',
-    value: function _delete(req, res) {}
+    value: function _delete(req, res) {
+      var _this4 = this;
+
+      var run_method = function run_method(record) {
+        if (record == null) {
+          throw new _AppError2.default(_this4.name + ' does not exist', 404);
+        }
+
+        var currentTime = new Date();
+        record.update({ deprecated_at: currentTime.toISOString() }).then(function (deletedRecord) {
+          res.status(200).send(deletedRecord);
+        }).catch(function (err) {
+          res.send(err);
+        });
+      };
+
+      this.findRecord(res, { id: req.params.id }, run_method);
+    }
   }, {
     key: 'findRecord',
-    value: function findRecord(res, query, run_method) {
+    value: function findRecord(res) {
+      var query = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { id: this.id };
+      var run_method = arguments[2];
+
+      query['deprecated_at'] = null;
       _models2.default[this.name].findOne({ where: query }).then(function (record) {
         run_method(record);
       }).catch(function (err) {

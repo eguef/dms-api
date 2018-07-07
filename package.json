@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./package-lock.json,./README.md,./npm-debug.log --copy-files",
-    "start": "npm run build && node dist/server.js",
+    "start": "npm run build && nodemon dist/server.js",
     "db:migrate": "sequelize db:migrate:undo:all && sequelize db:migrate",
     "create:db": "sequelize db:create",
     "drop:db": "sequelize db:drop"
@@ -31,12 +31,13 @@
     "morgan": "^1.9.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.38.0",
+    "sequelize": "^4.27.0",
     "sequelize-cli": "^4.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "nodemon": "^1.17.5",
     "rimraf": "^2.6.2"
   }
 }
